@@ -1,0 +1,44 @@
+---
+- name: Check if {{ item }} is installed
+  shell: hdf-select status | grep "^{{ item }}[[:space:][:blank:]0-9.-]*$"
+  register: is_installed
+  ignore_errors: yes
+
+- block:
+  - name: Install the {{ patch_version_underscore }} version of {{ item }}
+    command: "yum install -y {{ item }}_{{ patch_version_underscore }}"
+    async: 300
+    poll: 0
+    register: yum_install_result
+
+  - name: check status of yum install
+    async_status:
+      jid: "{{ yum_install_result.ansible_job_id }}"
+    register: yum_install_job_result
+    until: yum_install_job_result.finished
+    retries: 30
+
+  - name: Set the  {{ patch_version }} version for {{ item }}
+    command: "hdf-select set {{ item }} {{ patch_version }}"
+  when : is_installed is defined and is_installed.stdout != ""
+
+- block:
+  - name: Install the {{ patch_version_underscore }} version of nifi toolkit
+    command: "yum install -y nifi_{{ patch_version_underscore }}-toolkit"
+    async: 300
+    poll: 0
+    register: yum_install_toolkit_result
+
+  - name: check status of nifi toolkit install
+    async_status:
+      jid: "{{ yum_install_toolkit_result.ansible_job_id }}"
+    register: yum_install_toolkit_job_result
+    until: yum_install_toolkit_job_result.finished
+    retries: 30
+
+  - name: Set the  {{ patch_version }} version for nifi toolkit
+    command: "hdf-select set nifi-toolkit {{ patch_version }}"
+  when : is_installed is defined and is_installed.stdout != "" and is_installed.stdout is search('nifi')
+
+
+

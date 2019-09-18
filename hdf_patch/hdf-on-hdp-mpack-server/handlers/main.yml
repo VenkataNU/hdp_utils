@@ -1,0 +1,139 @@
+---
+- name: Taking stat of {{ hdf_tar_name }}
+  stat:
+    path: "{{ hdf_patch_local_path }}/{{ hdf_tar_name }}"
+  register: hdf_patch_file_result
+  tags:
+  - prerequisites
+
+- name: Get the HDF tar file from the repo
+  get_url:
+    url: "{{ hdf_patch_repo_url }}/{{ hdf_tar_name }}"
+    dest: "{{ hdf_patch_local_path }}/{{ hdf_tar_name }}"
+    owner: root
+    group: root
+    mode: 0755
+    timeout: 600
+  when: hdf_patch_file_result.stat.exists == False
+  tags:
+  - prerequisites
+
+- name: Unarchive the HDF tar file
+  unarchive:
+    src: "{{ hdf_patch_local_path }}/{{ hdf_tar_name }}"
+    dest: "{{ hdf_patch_local_path }}"
+    owner: root
+    group: root
+    mode: 0755
+  tags:
+  - prerequisites
+
+- name: Stop the HDF services before applying the patch
+  uri:
+    url: "http://{{ ansible_fqdn }}:8080/api/v1/clusters/{{ cluster_name }}/services/{{ item }}"
+    method: PUT
+    force_basic_auth: yes
+    user: "{{ ambari_admin_user }}"
+    password: "{{ ambari_admin_password }}"
+    headers: '{"X-Requested-By":"ambari"}'
+    body: "[{\"RequestInfo\":{\"context\":\"Stop {{ item }} via REST\"},\"Body\":{\"ServiceInfo\":{\"state\":\"INSTALLED\"}}}]|to_json"
+    body_format: raw
+    status_code: 200,201,202
+    timeout: 60
+    return_content: no
+  loop:  "{{ hdf_services_list.split(',') }}"
+  notify: "Wait for the components to stop"
+  tags:
+  - stop_hdf_components
+
+- name: Wait for the components to stop
+  uri:
+    url: "http://{{ ansible_fqdn }}:8080/api/v1/clusters/{{ cluster_name }}/services/{{ item }}"
+    method: GET
+    force_basic_auth: yes
+    user: "{{ ambari_admin_user }}"
+    password: "{{ ambari_admin_password }}"
+    headers: '{"X-Requested-By":"ambari", "Content-Type":"application/json"}'
+    status_code: 200,201,202
+    return_content: yes
+    register: component_status
+    debug: component_status
+  register: component_status
+  until: ((component_status.content|from_json).ServiceInfo.state == 'INSTALLED'  or
+       (component_status.content|from_json).ServiceInfo.state == 'STOPPED' )
+  retries: "{{ hdf_patch_wait_timeout // 10 }}"
+  delay: 10
+  loop:  "{{ hdf_services_list.split(',') }}"
+  tags:
+  - stop_hdf_components
+
+- meta: flush_handlers
+
+- name: Stop ambari-server
+  command: /usr/sbin/ambari-server stop
+  tags:
+  - stop_ambari_server
+
+- name: Start the HDF services after applying the patch
+  uri:
+    url: "http://{{ ansible_fqdn }}:8080/api/v1/clusters/{{ cluster_name }}/services/{{ item }}"
+    method: PUT
+    force_basic_auth: yes
+    user: "{{ ambari_admin_user }}"
+    password: "{{ ambari_admin_password }}"
+    headers: '{"X-Requested-By":"ambari"}'
+    body: "[{\"RequestInfo\":{\"context\":\"Stop {{ item }} via REST\"},\"Body\":{\"ServiceInfo\":{\"state\":\"STARTED\"}}}]|to_json"
+    body_format: raw
+    status_code: 200,201,202
+    timeout: 60
+    return_content: no
+  loop:  "{{ hdf_services_list.split(',') }}"
+  notify: "Wait for the components to start"
+  tags:
+  - start_hdf_components
+
+- name: Wait for the components to start
+  uri:
+    url: "http://{{ ansible_fqdn }}:8080/api/v1/clusters/{{ cluster_name }}/services/{{ item }}"
+    method: GET
+    force_basic_auth: yes
+    user: "{{ ambari_admin_user }}"
+    password: "{{ ambari_admin_password }}"
+    headers: '{"X-Requested-By":"ambari", "Content-Type":"application/json"}'
+    status_code: 200,201,202
+    return_content: yes
+    register: component_status
+    debug: component_status
+  register: component_status
+  until: ((component_status.content|from_json).ServiceInfo.state == 'STARTED')
+  retries: "{{ hdf_patch_wait_timeout // 10 }}"
+  delay: 10
+  loop:  "{{ hdf_services_list.split(',') }}"
+  tags:
+  - start_hdf_components
+
+- meta: flush_handlers
+
+- name: Restart ambari-agent
+  service:
+    name: ambari-agent
+    state: restarted
+
+- name: Stop ambari-server
+  service:
+    name: ambari-server
+    state: installed
+
+- name: Restart ambari-server
+  service:
+    name: ambari-server
+    state: restarted
+  notify: "Wait for Ambari Server to start listening on port 8080"
+
+- name: Wait for Ambari Server to start listening on port 8080
+  wait_for:
+    port: 8080
+    host: 0.0.0.0
+    delay: 1
+
+

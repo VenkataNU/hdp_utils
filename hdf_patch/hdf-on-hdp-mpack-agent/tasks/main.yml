@@ -1,0 +1,37 @@
+---
+- name: Restart ambari-agent
+  command: /usr/sbin/ambari-agent restart
+
+- name: Change ambari repo file to add the new HDF repo
+  lineinfile:
+    path: "/etc/yum.repos.d/ambari-hdp-1.repo"
+    regexp: '^baseurl=http[s]?://[\w:.-]*/HDF/[\w:./-]*$'
+    line: "baseurl={{ hdf_patch_repo_url }}"
+    state: present
+    backrefs: yes
+  tags:
+  - install
+
+- name: Upgrade HDF components
+  include_tasks: hdf_tasks.yml
+  loop:  "{{ hdf_services_repo_list.split(',') }}"
+  tags:
+  - install
+
+- name: Make sure the ambari-agent service is started
+  service:
+    name: ambari-agent
+    state: started
+  tags:
+  - install
+
+- name: Make sure the ambari-agent service is enabled
+  service:
+    name: ambari-agent
+    enabled: yes
+  ignore_errors: true
+  tags:
+  - install
+
+
+

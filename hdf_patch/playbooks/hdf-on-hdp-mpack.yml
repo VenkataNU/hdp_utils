@@ -1,0 +1,16 @@
+---
+- import_playbook: "set_variables.yml"
+
+- name: Apply the hdf-on-hdp-mpack-server role to the ambari-server group
+  hosts: ambari-server
+  any_errors_fatal: true
+  become: yes
+  roles:
+    -  hdf-on-hdp-mpack-server
+
+- name: Apply the hdf-on-hdp-mpack-agent role
+  hosts: hadoop-cluster
+  any_errors_fatal: true
+  become: yes
+  roles:
+    - hdf-on-hdp-mpack-agent
