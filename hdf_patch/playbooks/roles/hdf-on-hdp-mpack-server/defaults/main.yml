@@ -1,0 +1,16 @@
+---
+hdf_services_list: NIFI,NIFI_REGISTRY,REGISTRY
+patch_unarchived: 'no' # this is either yes|no, if you have already downloaded the patch and untarred it and kept it ready for the install, keep it yes but make sure the paths are right
+db_login_host: XXXXXXXX
+db_login_user: XXXXXXX
+db_login_pass: ''
+db_backup_dir: /tmp
+mpack_patch_filename: 'hdf-ambari-mpack-3.4.0.4-1.tar.gz'
+hdf_patch_repo_url: 'http://private-repo-1.hortonworks.com/HDF/centos7/3.x/updates/3.4.0.4-1'
+hdf_tar_name: 'HDF-3.4.0.4-1-centos7-tars-tarball.tar.gz'
+hdf_patch_local_path: '/tmp'
+hdf_mpack_tar_internal_path: 'HDF/centos7/3.4.0.4-1/tars/hdf_ambari_mp'
+hdf_patch_wait_timeout: 600
+ambari_runas_user: XXXXXXXXXXXXX
+ambari_runas_user_group: XXXXXXXXXX
+hdf_repo_version_file: '/tmp/hwx_cluster_repo_version'

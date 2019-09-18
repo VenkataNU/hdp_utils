@@ -1,0 +1,23 @@
+---
+- name: Restart ambari-agent
+  service:
+    name: ambari-agent
+    state: restarted
+
+- name: Start ambari-agent
+  service:
+    name: ambari-agent
+    state: started
+  tags:
+  - start_ambari_agent
+
+- name: Stop ambari-agent
+  service:
+    name: ambari-agent
+    state: installed
+
+- name: Stop ambari-agent
+  command: /usr/sbin/ambari-agent stop
+  tags:
+  - stop_ambari_agent
+
