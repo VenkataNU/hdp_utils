@@ -1,5 +1,0 @@
----
-hdf_patch_repo_url: 'http://private-repo-1.hortonworks.com/HDF/centos7/3.x/updates/3.4.0.4-1'
-hdf_services_repo_list : nifi,nifi-registry,registry
-patch_version_underscore : '3_4_0_4_1'
-patch_version : '3.4.0.4-1'
