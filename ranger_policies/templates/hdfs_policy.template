@@ -1,0 +1,58 @@
+{
+      "isEnabled":true,
+      "version":1,
+      "service":"hdfs_service_name",
+      "name":"hdfs_policy_name",
+      "policyType":0,
+      "policyPriority":0,
+      "description":"",
+      "isAuditEnabled":true,
+      "resources":{
+         "path":{
+            "values":[ "hdfs_directory_name" ],
+            "isExcludes":false,
+            "isRecursive":true
+         }
+      },
+      "policyItems":[
+         {
+            "accesses":[ hdfs_write_accesses ],
+            "users":[],
+            "groups":[ "hdfs_write_access_groups" ],
+            "conditions":[],
+            "delegateAdmin":false
+         },
+         {
+            "accesses":[ hdfs_read_accesses ],
+            "users":[],
+            "groups":[ "hdfs_read_access_groups" ],
+            "conditions":[],
+            "delegateAdmin":false
+         }
+      ],
+      "denyPolicyItems":[
+
+      ],
+      "allowExceptions":[
+
+      ],
+      "denyExceptions":[
+
+      ],
+      "dataMaskPolicyItems":[
+
+      ],
+      "rowFilterPolicyItems":[
+
+      ],
+      "options":{
+
+      },
+      "validitySchedules":[
+
+      ],
+      "policyLabels":[
+         ""
+      ]
+   }
+

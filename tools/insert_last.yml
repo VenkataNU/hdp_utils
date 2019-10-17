@@ -1,0 +1,7 @@
+- hosts: all
+  tasks:
+    - name: Insert a line at the end of a file.
+      lineinfile:
+        path: /etc/profile
+        line: umask 0022
+

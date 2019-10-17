@@ -1,0 +1,14 @@
+- hosts: all
+  tasks:
+    - name: Insert below lines at the end of a file.
+      blockinfile:
+       dest: /etc/security/limits.conf
+       block: |
+               *       -       nproc   65535 
+               *       -       nofile  65535 
+
+    - name: Insert a line at the end of a file.
+      lineinfile:
+        path: /etc/sysctl.conf
+        line: fs.file-max=65536
+        

@@ -1,0 +1,76 @@
+{
+      "isEnabled":true,
+      "version":1,
+      "service":"hbase_service_name",
+      "name":"hbase_policy_name",
+      "policyType":0,
+      "policyPriority":0,
+      "description":"",
+      "isAuditEnabled":true,
+      "resources":{
+         "column-family":{
+            "values":[
+               "*"
+            ],
+            "isExcludes":false,
+            "isRecursive":false
+         },
+         "column":{
+            "values":[
+               "*"
+            ],
+            "isExcludes":false,
+            "isRecursive":false
+         },
+         "table":{
+            "values":[
+               "hbase_namespace_value"
+            ],
+            "isExcludes":false,
+            "isRecursive":false
+         }
+      },
+      "policyItems":[
+         {
+            "accesses":[ hbase_write_accesses ],
+            "users":[],
+            "groups":[ "hbase_write_access_groups" ],
+            "conditions":[
+
+            ],
+            "delegateAdmin":false
+         },
+         {
+            "accesses":[ hbase_read_accesses ],
+            "users":[],
+            "groups":[ "hbase_read_access_groups" ],
+            "conditions":[
+
+            ],
+            "delegateAdmin":false
+         }
+      ],
+      "denyPolicyItems":[
+
+      ],
+      "allowExceptions":[
+
+      ],
+      "denyExceptions":[
+
+      ],
+      "dataMaskPolicyItems":[
+
+      ],
+      "rowFilterPolicyItems":[
+
+      ],
+      "options":{
+
+      },
+      "validitySchedules":[
+
+      ],
+      "policyLabels":[]
+   }
+

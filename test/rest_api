@@ -1,0 +1,8 @@
+curl -u admin:admin -H “Content-Type: application/json” -X POST http://c249-node5.example.com:6080/service/public/v2/api/policy -d @create_policy.json
+
+curl -ivk -H "X-Requested-By: ambari" “Content-Type: application/json” -u admin:amb_ranger_admin@2019 -X POST https://hdpmaster-one-dev4.altaircicd.mdtdev.com:6182/service/public/v2/api/policy -d @create_policy.json
+
+curl -ivk -H “Content-Type: application/json” -u  admin:amb_ranger_admin@2019 -X POST https://hdpmaster-one-dev4.altaircicd.mdtdev.com:6182/service/public/v2/api/policy -d @create_policy.json
+
+curl -u admin:amb_ranger_admin@2019 -H “Content-Type: application/json” -X POST https://hdpmaster-one-dev4.altaircicd.mdtdev.com:6182/service/public/v2/api/policy -d @create_policy.json
+

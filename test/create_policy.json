@@ -1,0 +1,35 @@
+{
+ "policyName": "HomePolicy",
+ "resourceName": "/home,/apps",
+ "description": "Home",
+ "repositoryName": "med-auto-dev4-v1_hadoop",
+ "repositoryType": "hdfs",
+ "isEnabled": "true",
+ "isRecursive": false,
+ "isAuditEnabled": true,
+ "permMapList": [
+ {
+ "userList": [
+ "john",
+ "andrew"
+ ],
+ "permList": [
+ "SELECT",
+ "UPDATE"
+ ]
+ },
+ {
+ "userList": [
+ "hr"
+ ],
+ "groupList": [
+ "admin"
+ ],
+ "permList": [
+ "DROP",
+ "ALTER",
+ "ADMIN"
+ ]
+ }
+ ]
+}

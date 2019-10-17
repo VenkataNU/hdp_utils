@@ -1,0 +1,68 @@
+{
+    "isEnabled":true,
+    "version":1,
+    "service":"kafka_service_name",
+    "name":"kafka_policy_name",
+    "policyType":0,
+    "policyPriority":0,
+    "description":"",
+    "isAuditEnabled":true,
+    "resources":{
+       "topic":{
+          "values":[
+             "kafka_topic_name"
+          ],
+          "isExcludes":false,
+          "isRecursive":false
+       }
+    },
+    "policyItems":[
+       {
+          "accesses":[ publisher_accesses ],
+          "users":[ ],
+          "groups":[
+               "publisher_access_groups"
+          ],
+          "conditions":[
+
+          ],
+          "delegateAdmin":false
+       },
+       {
+          "accesses":[ consumer_accesses ],
+          "users":[ ],
+          "groups":[
+               "consumer_access_groups"
+          ],
+          "conditions":[
+
+          ],
+          "delegateAdmin":false
+       }
+    ],
+    "denyPolicyItems":[
+
+    ],
+    "allowExceptions":[
+
+    ],
+    "denyExceptions":[
+
+    ],
+    "dataMaskPolicyItems":[
+
+    ],
+    "rowFilterPolicyItems":[
+
+    ],
+    "options":{
+
+    },
+    "validitySchedules":[
+
+    ],
+    "policyLabels":[
+       ""
+    ]
+ }
+

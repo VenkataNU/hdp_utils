@@ -1,0 +1,4 @@
+hdfs_service_name="med-auto-dev4-v1_hadoop"
+hdfs_template_file="templates/hdfs_policy.template"
+hdfs_json_load_file="/tmp/hdfs_create_policy.json"
+

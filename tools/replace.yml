@@ -1,0 +1,7 @@
+- hosts: all
+  tasks:
+    - name: replace a line at the end of a file.
+      replace:
+        path: /etc/sssd/sssd.conf
+        regexp: '^use_fully_qualified_names = True$'
+        replace: 'use_fully_qualified_names = False'
