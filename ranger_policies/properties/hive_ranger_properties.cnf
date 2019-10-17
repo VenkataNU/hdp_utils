@@ -1,4 +1,0 @@
-hive_service_name="med-auto-dev4-v1_hive"
-hive_template_file="templates/hive_policy.template"
-hive_json_load_file="/tmp/hive_create_policy.json"
-

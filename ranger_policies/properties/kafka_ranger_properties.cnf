@@ -1,3 +1,0 @@
-kafka_service_name="med-auto-dev4-v1_kafka"
-kafka_template_file="templates/kafka_policy.template"
-kafka_json_load_file="/tmp/kafka_create_policy.json"
