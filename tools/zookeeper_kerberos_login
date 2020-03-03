@@ -1,0 +1,4 @@
+su - zookeep
+kinit -kt /etc/security/keytabs/zk.service.keytab zookeeper/<server_info>@domain
+export JVMFLAGS="-Djava.security.auth.login.config=/etc/zookeeper/conf/zookeeper_jaas.conf"
+/usr/hdp/current/zookeeper-server/bin/zkCli.sh
