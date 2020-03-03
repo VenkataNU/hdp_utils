@@ -1,0 +1,114 @@
+#!/bin/bash
+
+usage () {
+  echo
+  echo "Replace directories in a source location with symlinks to a target location"
+  echo "Usage: ${JOBNAME} [-h] [-d directory list file] [-s source directory] [-t target directory]"
+  echo "       -h Display this message"
+  echo "       -d Text file containing a single directory name on each line. The listed directories"
+  echo "           will be replaced with symlinks. Default is /os1/hadoop/scripts/dirlist_log.txt"
+  echo "       -s Specifies the source directory. Default is /var/log"
+  echo "       -t Specifies the target directory. There is no default, this parameter is mandatory."
+  echo "       Ex: link_logs.sh -t /p01/data/had/log"
+ echo " "
+
+  exit 1
+}
+
+checkRC () {
+
+  export cRC=$1
+  export MSG=$2
+
+  if [ ${cRC} -eq 0 ]; then
+    :
+  else
+    print "\n**************************************************************************************"
+    print "** ${JOBNAME} Failed with RC = ${cRC}. Error ${MSG}. "
+    print "**************************************************************************************"
+    exit 1
+  fi
+
+}
+
+write() {
+  echo $(date +%F-%T): "$1"
+}
+
+validate() {
+  if [ -z ${TARGET} ]; then
+    write "Target directory must be provided."
+    usage
+  fi
+
+  write " "
+  write "Settings for this run:"
+  write "Source directory: ${SOURCE}"
+  write "Target directory: ${TARGET}"
+  write "File containing directory list: ${DIRLIST}"
+  write " "
+
+}
+
+#
+# Main
+#
+SOURCE=/var/log
+DIRLIST=/os1/hadoop/scripts/dirlist_log.txt
+JOBNAME=$(basename $0)
+
+while getopts :d:hs:t: opt; do
+  case ${opt} in
+    h) usage
+       ;;
+    d) DIRLIST=${OPTARG}
+       ;;
+    s) SOURCE=${OPTARG}
+       ;;
+    t) TARGET=${OPTARG}
+       ;;
+    *) echo "******************************************************************"
+       echo "${JOBNAME}: Invalid option found on command line: ${OPTARG}"
+       echo "******************************************************************"
+       usage
+       ;;
+  esac
+done
+
+validate
+
+if [ ! -d ${TARGET} ]; then
+  write "${TARGET} does not exist. Creating it."
+  mkdir -p ${TARGET}
+  chown root:root ${TARGET}
+  chmod 755 ${TARGET}
+
+  checkRC $? "Creating ${TARGET}"
+else
+  write "${TARGET} already exists"
+fi
+
+while read DIR; do
+  if [  -d ${SOURCE}/${DIR} -a ! -h ${SOURCE}/${DIR} ]; then
+
+    if [ -d ${TARGET}/${DIR} ]; then
+      write "${TARGET}/${DIR} already exists. Skipping."
+    else
+      write "Migrating ${SOURCE}/${DIR} to ${TARGET}/${DIR}"
+
+      cp -pr ${SOURCE}/${DIR} ${TARGET}/${DIR}
+      checkRC $? "Copying files from ${SOURCE}/${DIR} to ${TARGET}/${DIR}"
+
+      rm -fr ${SOURCE}/${DIR}
+      checkRC $? "Removing files from ${SOURCE}/${DIR}"
+
+      ln -s ${TARGET}/${DIR} ${SOURCE}/${DIR}
+      checkRC $? "Creating symlink from ${SOURCE}/${DIR} to ${TARGET}/${DIR}"
+    fi
+
+  else
+    write "${SOURCE}/${DIR} does not exist or is not a directory. Skipping."
+  fi
+done < ${DIRLIST}
+
+exit 0
